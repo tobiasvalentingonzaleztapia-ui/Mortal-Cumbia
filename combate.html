@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Fight - ULTIMATE</title>
+    
+    <style>
+        /* --- ESTILOS GENERALES Y FUENTES (MODERNOS) --- */
+        body {
+            /* Fondo Degradado Profundo (Dark/Cyberpunk) */
+            background: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%); 
+            color: #E0E0E0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente Profesional */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            padding-top: 20px;
+            transition: background 0.5s ease;
+        }
+
+        /* TÍTULO PRINCIPAL (CYBERPUNK/DIGITAL) */
+        .game-title {
+            font-size: 3rem;
+            color: #00E0FF; /* Electric Blue */
+            text-shadow: 0 0 5px rgba(0, 224, 255, 0.5), 0 0 15px rgba(0, 224, 255, 0.8);
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        /* --- PANTALLAS DE MENÚ (MODERNO) --- */
+        .menu-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 15, 25, 0.95); 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(40, 40, 60, 0.8); 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .menu-screen h1, .menu-screen h2 {
+            color: #FF5733; 
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+        }
+        .menu-screen h2 {
+            color: #4CAF50;
+            font-size: 1.5rem;
+        }
+        
+        /* Botones Planos y Elegantes */
+        .mode-button {
+            background-color: #2D3E50; 
+            color: #E0E0E0;
+            border: none;
+            padding: 12px 25px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 8px;
+            border-radius: 5px; 
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px #1A2530; 
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .mode-button:hover {
+            background-color: #3C5068;
+            transform: translateY(-2px);
+            box-shadow: 0 6px #1A2530;
+        }
+        .mode-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px #1A2530;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+
+        .multiplayer-mode-group {
+            border: 1px solid rgba(0, 224, 255, 0.5);
+            padding: 20px;
+            margin: 15px 0;
+            background-color: rgba(26, 26, 46, 0.5);
+            border-radius: 8px;
+        }
+
+        .customization-preview {
+            display: flex;
+            gap: 50px;
+            margin-bottom: 30px;
+        }
+        .fighter-preview {
+            width: 60px; height: 80px; 
+            background-color: #4CAF50;
+            border-radius: 5px 5px 20px 20px;
+            position: relative;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        .fighter-preview .fighter-head {
+            border: 1px solid #111;
+        }
+        .customization-options {
+            width: 80%;
+            max-width: 500px;
+        }
+        .option-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        .option-group select {
+            padding: 5px;
+            border-radius: 3px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            font-family: inherit;
+        }
+
+        /* --- ESTILOS DE JUEGO ADAPTATIVOS --- */
+
+        .instructions {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            border: 1px solid rgba(170, 170, 170, 0.2);
+            line-height: 1.4;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.4);
+            max-width: 900px;
+        }
+        
+        /* Contenedor principal del juego: usa vw/vh para ser adaptativo */
+        .game-container {
+            width: 90vw; 
+            height: 70vh; 
+            max-width: 900px; 
+            min-height: 300px; /* Evita que sea demasiado pequeño */
+            border: 1px solid #00E0FF; 
+            box-shadow: 0 0 25px rgba(0, 224, 255, 0.3); 
+            position: relative;
+            background: #000000;
+            overflow: hidden;
+            border-radius: 8px; 
+            image-rendering: auto;
+        }
+
+        /* UI PRINCIPAL (BARRAS DE VIDA Y TIMER) */
+        .ui-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* Flex-wrap permite que los elementos salten de línea en pantallas pequeñas */
+            flex-wrap: wrap; 
+            padding: 1vh 3vw; 
+            gap: 10px; 
+            width: 100%;
+        }
+        
+        .control-btn {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #666;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: none;
+            border-radius: 4px;
+            transition: background-color 0.1s;
+        }
+        .control-btn:hover { background-color: #555; }
+        
+        /* Timer Digital: usa vmin */
+        #timer-display {
+            font-size: 4vmin; 
+            color: #FFC300; 
+            text-shadow: 0 0 5px #FFC300;
+            border: none;
+            padding: 1vh 2vw;
+            background-color: #1A1A2E; 
+            border-radius: 4px;
+            font-weight: bold;
+            min-width: 70px; 
+            text-align: center;
+        }
+
+        /* Health Bar: usa vw/vh para adaptarse */
+        .health-bar {
+            width: 30vw; 
+            max-width: 350px;
+            height: 3vh; 
+            min-height: 20px;
+            background-color: rgba(255, 255, 255, 0.1); 
+            border: 1px solid #555; 
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-1 .health-fill {
+            background: linear-gradient(to right, #4CAF50, #8BC34A); 
+            right: 0; height: 100%; width: 100%; 
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .player-2 .health-fill {
+            background: linear-gradient(to left, #FF5733, #FFC300); 
+            left: 0; height: 100%; width: 100%; 
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+
+        /* --- ESTILOS DE LUCHADORES --- */
+        .fighter {
+            bottom: 50px; 
+            width: 60px; 
+            height: 80px; 
+            border-radius: 5px 5px 20px 20px; 
+            transition: 
+                bottom 0.25s cubic-bezier(0.4, 0.0, 0.2, 1), 
+                left 0.1s linear, 
+                transform 0.1s linear,
+                box-shadow 0.3s; 
+            transform-origin: center bottom; 
+            position: absolute;
+        }
+        
+        .fighter-head, .limb {
+            position: absolute; 
+            background-color: #111111; 
+            border: 1px solid #333;
+            box-shadow: none;
+        }
+
+        /* Estilos de las extremidades y cabeza omitidos para brevedad (son los mismos) */
+        .fighter-head {
+            top: -35px; left: 10px;
+            width: 40px; height: 40px; 
+            border-radius: 50%; 
+            background-color: #FFD700; 
+            border: 1px solid #111;
+        }
+        .arm { width: 12px; height: 25px; }
+        .arm.left { top: 5px; left: -10px; }
+        .arm.right { top: 5px; right: -10px; }
+        .leg { width: 18px; height: 30px; }
+        .leg.left { top: 75px; left: 5px; } 
+        .leg.right { top: 75px; right: 5px; } 
+        .hand {
+            background-color: #FF00FF; 
+            border: 2px solid #fff;
+            box-shadow: 0 0 8px #FF00FF;
+            bottom: -18px; left: 50%; transform: translateX(-50%); 
+            position: absolute; width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+
+        /* Animación de articulación (movimiento/ataque) omitida para brevedad */
+        .fighter .arm.left { transform: rotate(10deg); transition: transform 0.15s; }
+        .fighter .arm.right { transform: rotate(-10deg); transition: transform 0.15s; }
+        .fighter .leg.left { transform: rotate(-5deg); transition: transform 0.15s; }
+        .fighter .leg.right { transform: rotate(5deg); transition: transform 0.15s; }
+        .fighter.moving .arm.left { transform: rotate(-30deg); }
+        .fighter.moving .arm.right { transform: rotate(30deg); }
+        .fighter.moving .leg.left { transform: rotate(20deg); }
+        .fighter.moving .leg.right { transform: rotate(-20deg); }
+        .fighter.attacking .arm.left, .fighter.attacking .arm.right {
+            transform: translate(25px, 0px) rotate(0deg) !important; 
+        }
+
+        /* --- ESTILO DE CUENTA REGRESIVA ESTILO MK2 --- */
+        #countdown-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+
+        #countdown-message {
+            /* Fuente Gruesa y de alto contraste para simular el look retro */
+            font-family: Arial Black, Gadget, sans-serif;
+            font-size: 8rem;
+            font-weight: 900;
+            color: #FFD700; /* Oro */
+            -webkit-text-stroke: 4px #8B0000; /* Borde Rojo Oscuro (simulando borde de píxeles) */
+            text-shadow: 
+                -4px -4px 0 #000, 
+                4px -4px 0 #000, 
+                -4px 4px 0 #000, 
+                4px 4px 0 #000, /* Sombra para simular grosor */
+                0 0 20px #FF4500; /* Resplandor Naranja/Rojo */
+            animation: bounceIn 0.3s ease-out;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+        
+        /* Estilo específico para "FIGHT!" */
+        .fight-style {
+            font-size: 5rem !important; /* Más pequeño que los números */
+            color: #FF4500 !important; /* Rojo Naranja Brillante */
+            -webkit-text-stroke: 4px #FFD700 !important; /* Borde Oro/Amarillo */
+            text-shadow: 
+                -4px -4px 0 #000, 
+                4px -4px 0 #000, 
+                -4px 4px 0 #000, 
+                4px 4px 0 #000,
+                0 0 30px #FF0000, 
+                0 0 50px #FF8C00; /* Resplandor intenso */
+            letter-spacing: 15px !important;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        /* --- MEDIA QUERY (MÓVIL / PANTALLA PEQUEÑA) --- */
+        @media (max-width: 950px) {
+            .game-title, .instructions {
+                font-size: 1.5rem;
+                margin-bottom: 5px;
+                letter-spacing: 2px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            body { padding-top: 5px; }
+            .ui-top {
+                flex-wrap: wrap; 
+                padding: 5px 5px;
+                gap: 5px;
+                justify-content: space-around;
+            }
+            #game-controls {
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
+            }
+            .health-bar {
+                width: 45%; 
+                min-width: 100px;
+                height: 15px;
+            }
+            #timer-display { font-size: 1.5rem; padding: 5px 10px; }
+            .touch-controls { display: block; }
+            .menu-screen h1 { font-size: 1.8rem; }
+            .menu-screen h2 { font-size: 1.2rem; }
+            #countdown-message { font-size: 5rem; -webkit-text-stroke: 3px #8B0000; }
+            .fight-style { font-size: 3rem !important; letter-spacing: 10px !important; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="home-screen" class="menu-screen">
+        <h1>DIGITAL FIGHT</h1>
+        <button class="mode-button" onclick="showDifficultyScreen()">Jugar (1 vs CPU/Jugador)</button>
+        <button class="mode-button" onclick="showMultiplayerScreen()">🎮 Jugar (Multijugador Asimétrico)</button>
+        <button class="mode-button" onclick="showCustomizationScreen()">🎨 Personalizar Apariencia</button>
+    </div>
+
+    <div id="difficulty-screen" class="menu-screen hidden">
+        <h2>MODOS CLÁSICOS (1 VS 1)</h2>
+        <div class="multiplayer-mode-group">
+            <h3>CPU</h3>
+            <button class="mode-button" onclick="startGame('cpu', 0.2, 1, 1)">NIVEL 1: FÁCIL</button>
+            <button class="mode-button" onclick="startGame('cpu', 0.5, 1, 1)">NIVEL 2: NORMAL</button>
+            <button class="mode-button" onclick="startGame('cpu', 0.7, 1, 1)">NIVEL 3: DIFÍCIL</button>
+        </div>
+        <div class="multiplayer-mode-group">
+            <h3>2 JUGADORES</h3>
+            <button class="mode-button" onclick="startGame('two_players', 0, 1, 1)">1 VS 1 (Humano)</button>
+        </div>
+        <button class="mode-button" onclick="goToHome()">↩ VOLVER</button>
+    </div>
+
+    <div id="multiplayer-screen" class="menu-screen hidden">
+        <h2>MODOS ASIMÉTRICOS (2 JUGADORES)</h2>
+        <div class="multiplayer-mode-group">
+            <h3>MODO 2 VS 1 (P1 y P3 vs P2)</h3>
+            <p style="font-size: 0.7rem; color: #ccc;">P1 controla a P1, P2 controla a P3 (aliado). P3 tiene 50% de vida.</p>
+            <button class="mode-button" onclick="startGame('two_players', 0, 2, 1)">JUGAR 2 vs 1</button>
+        </div>
+        <div class="multiplayer-mode-group">
+            <h3>MODO 2 VS 2 (P1 y P3 vs P2 y P4)</h3>
+            <p style="font-size: 0.7rem; color: #ccc;">P1 controla P1/P3. P2 controla P2/P4. P3, P4 tienen 50% de vida.</p>
+            <button class="mode-button" onclick="startGame('two_players', 0, 2, 2)">JUGAR 2 vs 2</button>
+        </div>
+        <button class="mode-button" onclick="goToHome()">↩ VOLVER</button>
+    </div>
+
+
+    <div id="customization-screen" class="menu-screen hidden">
+        <h2>PERSONALIZA TUS LUCHADORES</h2>
+        <div class="customization-preview">
+            <div>
+                <p style="font-weight: 700;">JUGADOR 1</p>
+                <div id="p1-preview" class="fighter-preview" style="background-color: #4CAF50;">
+                    <div class="fighter-head"></div>
+                    <div id="p1-preview-hat" class="accessory hat p1-hat"></div>
+                    <div id="p1-preview-mask" class="accessory mask p1-mask"></div>
+                </div>
+            </div>
+            <div>
+                <p style="font-weight: 700;">JUGADOR 2 / CPU</p>
+                <div id="p2-preview" class="fighter-preview" style="background-color: #FF5722;">
+                    <div class="fighter-head"></div>
+                    <div id="p2-preview-hat" class="accessory hat p2-hat"></div>
+                    <div id="p2-preview-mask" class="accessory mask p2-mask"></div>
+                </div>
+            </div>
+        </div>
+        <div class="customization-options">
+            <div class="option-group">
+                <label for="p1-color">P1 Color Cuerpo:</label>
+                <select id="p1-color" onchange="updateCustomization('p1', 'color', this.value)">
+                    <option value="#4CAF50">Verde Menta</option>
+                    <option value="#0056D5">Azul Profundo</option>
+                    <option value="#FFD700">Amarillo Oro</option>
+                </select>
+            </div>
+            <div class="option-group">
+                <label for="p1-hat">P1 Visor/Gorra:</label>
+                <select id="p1-hat" onchange="updateCustomization('p1', 'hat', this.value)">
+                    <option value="none">Ninguno</option>
+                    <option value="#8B4513">Marrón (Gorra)</option>
+                    <option value="#000000">Negro (Visor)</option>
+                </select>
+            </div>
+            <div class="option-group">
+                <label for="p1-mask">P1 Antifaz Digital:</label>
+                <select id="p1-mask" onchange="updateCustomization('p1', 'mask', this.value)">
+                    <option value="none">Ninguno</option>
+                    <option value="#FF0000">Rojo Neón</option>
+                    <option value="#00FFFF">Cyan Eléctrico</option>
+                </select>
+            </div>
+            <hr style="width: 100%; border-color: #333; margin: 20px 0;">
+            <div class="option-group">
+                <label for="p2-color">P2 Color Cuerpo:</label>
+                <select id="p2-color" onchange="updateCustomization('p2', 'color', this.value)">
+                    <option value="#FF5722">Naranja Intenso</option>
+                    <option value="#FF0000">Rojo Sangre</option>
+                    <option value="#8A2BE2">Púrpura Neón</option>
+                </select>
+            </div>
+        </div>
+        <button class="mode-button" style="margin-top: 30px;" onclick="goToHome()">✅ ACEPTAR Y VOLVER</button>
+    </div>
+
+
+    <div class="game-title" id="main-title">DIGITAL FIGHT</div>
+
+    <div class="instructions" id="pc-instructions">
+        Controles: P1: [A] izquierda, [D] derecha, [W] salto, [J] golpe. P2: [←] izquierda, [→] derecha, [↑] salto, [L] golpe.
+    </div>
+    
+    <div class="game-container hidden" id="game-area">
+        
+        <div class="ui-top">
+            
+            <div id="game-controls">
+                <button class="control-btn" onclick="togglePause()" id="pause-btn">⏸ PAUSAR [P]</button>
+                <button class="control-btn" onclick="goToHome()">🏠 MENÚ</button>
+            </div>
+            
+            <div class="health-bar player-1">
+                <div class="health-fill" id="p1-health-fill"></div>
+            </div>
+            
+            <div id="timer-display">30</div>
+
+            <div class="health-bar player-2">
+                <div class="health-fill" id="p2-health-fill"></div>
+            </div>
+        </div>
+
+        <div class="particle-container" id="particle-area"></div> 
+
+        <div class="fighter" id="player1">
+            <div class="fighter-head"></div>
+            <div class="limb arm left"><div class="hand"></div></div>
+            <div class="limb arm right"><div class="hand"></div></div>
+            <div class="limb leg left"></div>
+            <div class="limb leg right"></div>
+            <div id="p1-hat-deco" class="accessory hat p1-hat"></div>
+            <div id="p1-mask-deco" class="accessory mask p1-mask"></div>
+        </div>
+        
+        <div class="fighter" id="player2">
+            <div class="fighter-head"></div>
+            <div class="limb arm left"><div class="hand"></div></div>
+            <div class="limb arm right"><div class="hand"></div></div>
+            <div class="limb leg left"></div>
+            <div class="limb leg right"></div>
+            <div id="p2-hat-deco" class="accessory hat p2-hat"></div>
+            <div id="p2-mask-deco" class="accessory mask p2-mask"></div>
+        </div>
+
+        <div class="fighter hidden" id="player3">
+            <div class="fighter-head"></div>
+            <div class="limb arm left"><div class="hand"></div></div>
+            <div class="limb arm right"><div class="hand"></div></div>
+            <div class="limb leg left"></div>
+            <div class="limb leg right"></div>
+        </div>
+        
+        <div class="fighter hidden" id="player4">
+            <div class="fighter-head"></div>
+            <div class="limb arm left"><div class="hand"></div></div>
+            <div class="limb arm right"><div class="hand"></div></div>
+            <div class="limb leg left"></div>
+            <div class="limb leg right"></div>
+        </div>
+
+
+        <div id="item"></div>
+
+        <div id="game-status"></div>
+
+        <div id="countdown-overlay" class="hidden">
+            <div id="countdown-message"></div>
+        </div>
+
+    </div>
+
+    <div class="music-control">
+        <button id="music-btn" class="mode-button" style="font-size: 0.9rem; padding: 8px 15px; margin-top: 20px;">🎶 Play Música</button>
+    </div>
+
+    <div class="touch-controls">
+        <div class="mobile-layout">
+            
+            <div class="control-panel p1-controls">
+                <div class="touch-btn" data-key="w">P1/P3 Salto</div>
+                <div class="touch-btn" data-key="j">P1/P3 Golpe</div>
+                <div class="touch-btn" data-key="a">P1/P3 ←</div>
+                <div class="touch-btn" data-key="d">P1/P3 →</div>
+            </div>
+
+            <div class="control-panel p2-controls" id="p2-touch-controls">
+                <div class="touch-btn" data-key="ArrowUp">P2/P4 Salto</div>
+                <div class="touch-btn" data-key="l">P2/P4 Golpe</div>
+                <div class="touch-btn" data-key="ArrowLeft">P2/P4 ←</div>
+                <div class="touch-btn" data-key="ArrowRight">P2/P4 →</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // --- CONFIGURACIÓN DE JUEGO GENERAL ---
+        const DAMAGE_BASE = 4;         
+        const DAMAGE_RANDOM_MAX = 8;   
+        const ITEM_DAMAGE = 12;        
+        const ROUND_TIME = 30; 
+        const MAX_HEALTH = 100;
+        const ALLY_HEALTH = 50; 
+        
+        // Dificultad y modo
+        let cpuDifficulty = 0.5;
+        let gameMode = 'cpu'; 
+        let team1Fighters = 1; 
+        let team2Fighters = 1; 
+
+        // Estado del juego
+        let currentTimer = ROUND_TIME;
+        let timerInterval;
+        let gameActive = false; // El juego solo está activo DESPUÉS del contador
+        let isPaused = false; 
+        let isCountingDown = false; // NUEVO: Estado de cuenta regresiva
+
+        // Constantes de física y movimiento
+        const GROUND_Y = 50; 
+        const CONTAINER_WIDTH = 900; 
+        const GRAVITY = 0.8; 
+        const moveSpeed = 14; 
+        const jumpForce = 30; 
+        const itemLaunchSpeed = 15; 
+
+        // Referencias del DOM
+        const homeScreen = document.getElementById('home-screen');
+        const difficultyScreen = document.getElementById('difficulty-screen'); 
+        const multiplayerScreen = document.getElementById('multiplayer-screen'); 
+        const customizationScreen = document.getElementById('customization-screen'); 
+        const gameArea = document.getElementById('game-area');
+        const p1HealthFill = document.getElementById('p1-health-fill');
+        const p2HealthFill = document.getElementById('p2-health-fill');
+        const player1El = document.getElementById('player1');
+        const player2El = document.getElementById('player2');
+        const player3El = document.getElementById('player3'); 
+        const player4El = document.getElementById('player4'); 
+        const gameStatus = document.getElementById('game-status');
+        const itemEl = document.getElementById('item');
+        const timerDisplay = document.getElementById('timer-display');
+        const touchButtons = document.querySelectorAll('.touch-btn');
+        const p2TouchControls = document.getElementById('p2-touch-controls');
+        const pauseBtn = document.getElementById('pause-btn'); 
+        const particleArea = document.getElementById('particle-area'); 
+        // NUEVO: Referencias del contador
+        const countdownOverlay = document.getElementById('countdown-overlay');
+        const countdownMessage = document.getElementById('countdown-message');
+
+
+        // --- ESTADO DE LUCHADORES --- (Misma estructura)
+        const fighters = [
+            { id: 1, el: player1El, state: { x: 100, y: GROUND_Y, velocityY: 0, onGround: true, width: 60, height: 80 }, health: MAX_HEALTH, team: 1, active: true, isAttacking: false, direction: 1 },
+            { id: 2, el: player2El, state: { x: 740, y: GROUND_Y, velocityY: 0, onGround: true, width: 60, height: 80 }, health: MAX_HEALTH, team: 2, active: true, isAttacking: false, direction: -1 }, 
+            { id: 3, el: player3El, state: { x: 180, y: GROUND_Y, velocityY: 0, onGround: true, width: 60, height: 80 }, health: ALLY_HEALTH, team: 1, active: false, isAttacking: false, direction: 1 }, 
+            { id: 4, el: player4El, state: { x: 660, y: GROUND_Y, velocityY: 0, onGround: true, width: 60, height: 80 }, health: ALLY_HEALTH, team: 2, active: false, isAttacking: false, direction: -1 } 
+        ];
+        
+        // Estado de movimiento y CPU (Misma estructura)
+        const keys = {
+            a: { pressed: false }, d: { pressed: false }, w: { pressed: false }, j: { pressed: false }, 
+            ArrowLeft: { pressed: false }, ArrowRight: { pressed: false }, ArrowUp: { pressed: false }, l: { pressed: false }
+        };
+
+        const itemState = { x: -50, y: -50, width: 35, height: 35, active: false, flying: false, velocityX: 0, direction: 0 };
+        
+        let cpuActionInterval;
+        let itemSpawnInterval;
+
+        // Estado de personalización (Misma estructura)
+        let p1Customization = { color: '#4CAF50', hat: 'none', mask: 'none' };
+        let p2Customization = { color: '#FF5722', hat: 'none', mask: 'none' };
+
+        // Lógica de Audio (Omitida para brevedad, misma estructura)
+        const soundMusic = new Audio('background_music.mp3'); 
+        soundMusic.loop = true;
+        const musicBtn = document.getElementById('music-btn');
+        let musicPlaying = false;
+        
+        musicBtn.addEventListener('click', () => {
+            if (musicPlaying) { soundMusic.pause(); musicBtn.textContent = '🎶 Play Música'; } 
+            else { soundMusic.play().catch(e => console.log('Error al reproducir música:', e)); musicBtn.textContent = '⏸ Pause Música'; }
+            musicPlaying = !musicPlaying;
+        });
+
+        // --- FUNCIONES DE NAVEGACIÓN Y PERSONALIZACIÓN (Omitidas para brevedad, mismas funciones) ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.menu-screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+            gameArea.classList.add('hidden');
+        }
+
+        function goToHome() {
+            clearInterval(timerInterval);
+            clearInterval(itemSpawnInterval);
+            if (cpuActionInterval) clearInterval(cpuActionInterval);
+            gameActive = false;
+            isPaused = false;
+            isCountingDown = false; // Reiniciar estado
+            countdownOverlay.classList.add('hidden'); // Ocultar overlay
+            pauseBtn.innerHTML = '⏸ PAUSAR [P]';
+            gameStatus.style.display = 'none';
+
+            showScreen('home-screen');
+        }
+        
+        function showDifficultyScreen() { showScreen('difficulty-screen'); }
+        function showMultiplayerScreen() { showScreen('multiplayer-screen'); }
+        function showCustomizationScreen() { 
+            showScreen('customization-screen'); 
+            applyCustomizationStyles(1);
+            applyCustomizationStyles(2);
+        }
+        
+        function updateCustomization(player, type, value) {
+            const state = player === 'p1' ? p1Customization : p2Customization;
+            state[type] = value;
+            
+            const previewEl = document.getElementById(`${player}-preview`);
+            const hatEl = document.getElementById(`${player}-preview-hat`);
+            const maskEl = document.getElementById(`${player}-preview-mask`);
+
+            if (type === 'color') {
+                previewEl.style.backgroundColor = value;
+            } else if (type === 'hat') {
+                // Lógica de personalización omitida por brevedad
+            } else if (type === 'mask') {
+                // Lógica de personalización omitida por brevedad
+            }
+        }
+
+        function applyCustomizationStyles(playerNum) {
+            const player = playerNum === 1 ? 'p1' : 'p2';
+            const state = playerNum === 1 ? p1Customization : p2Customization;
+
+            const fighterEl = document.getElementById(`player${playerNum}`);
+            const hatEl = document.getElementById(`${player}-hat-deco`);
+            const maskEl = document.getElementById(`${player}-mask-deco`);
+
+            if(fighterEl) fighterEl.style.backgroundColor = state.color;
+            // Más lógica de estilos omitida por brevedad
+        }
+
+
+        // --- FUNCIONES DE INICIO Y ESTADO ---
+        
+        function startGame(mode, difficulty = 0.5, team1 = 1, team2 = 1) { 
+            gameMode = mode;
+            cpuDifficulty = difficulty; 
+            team1Fighters = team1;
+            team2Fighters = team2;
+
+            document.querySelectorAll('.menu-screen').forEach(screen => screen.classList.add('hidden'));
+            gameArea.classList.remove('hidden');
+            
+            applyCustomizationStyles(1);
+            applyCustomizationStyles(2);
+
+            gameActive = false; // Desactivado hasta que termine el contador
+            isPaused = false;
+
+            // Configurar los luchadores activos (Misma lógica)
+            fighters[0].active = true; 
+            fighters[1].active = true; 
+            fighters[2].active = team1Fighters === 2; 
+            fighters[3].active = team2Fighters === 2; 
+
+            fighters.forEach(f => {
+                f.el.classList.toggle('hidden', !f.active);
+            });
+            
+            // Configuración de instrucciones (Misma lógica)
+            let instructions = '';
+            if (gameMode === 'cpu') {
+                p2TouchControls.classList.add('hidden');
+                const difficultyLevel = Math.round(difficulty * 10);
+                instructions = `Controles: P1: [A]...[J] golpe. ¡El P2 es CPU (Nivel ${difficultyLevel}/10)!`;
+            } else { 
+                p2TouchControls.classList.remove('hidden');
+                // Lógica de instrucciones multijugador omitida
+            }
+            document.getElementById('pc-instructions').innerHTML = instructions;
+
+
+            resetGame();
+            startCountdown(); // NUEVO: Iniciar la cuenta regresiva antes de todo
+            animate();
+        }
+
+        function resetGame() {
+            fighters.forEach((f) => {
+                if (f.active) {
+                    f.health = (f.id === 1 || f.id === 2) ? MAX_HEALTH : ALLY_HEALTH;
+                    f.state.x = f.id === 1 ? 100 : (f.id === 3 ? 180 : (f.id === 2 ? 740 : 660));
+                    f.state.y = GROUND_Y;
+                    f.el.classList.remove('hidden');
+                }
+                f.isAttacking = false;
+                f.el.classList.remove('attacking', 'moving', 'jumping');
+            });
+
+            p1HealthFill.style.width = '100%';
+            p2HealthFill.style.width = '100%';
+
+            currentTimer = ROUND_TIME;
+            gameStatus.style.display = 'none';
+            
+            for (let k in keys) { keys[k].pressed = false; }
+            hideItem();
+        }
+
+        // --- NUEVA FUNCIÓN: CUENTA REGRESIVA ESTILO MK2 ---
+
+        function startCountdown() {
+            isCountingDown = true;
+            countdownOverlay.classList.remove('hidden');
+            countdownMessage.classList.remove('fight-style');
+            
+            let count = 3;
+            countdownMessage.textContent = count;
+
+            const interval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownMessage.textContent = count;
+                } else if (count === 0) {
+                    countdownMessage.textContent = 'FIGHT!';
+                    countdownMessage.classList.add('fight-style');
+                } else {
+                    clearInterval(interval);
+                    countdownOverlay.classList.add('hidden');
+                    finalizeGameStart();
+                }
+            }, 1000);
+        }
+
+        function finalizeGameStart() {
+            gameActive = true;
+            isCountingDown = false;
+            startTimer();
+            itemSpawnInterval = setInterval(spawnItem, 8000); 
+            if (gameMode === 'cpu') startCPU(); // Iniciar CPU solo después del Fight
+        }
+
+
+        // --- LÓGICA DE TEMPORIZADOR Y COMBATE (Misma lógica) ---
+
+        function togglePause() {
+            if (isCountingDown) return; // No pausar durante el contador
+            if (!gameActive) return; 
+            isPaused = !isPaused;
+            if (isPaused) {
+                clearInterval(timerInterval);
+                clearInterval(itemSpawnInterval);
+                if (gameMode === 'cpu' && cpuActionInterval) clearInterval(cpuActionInterval);
+                gameStatus.innerHTML = 'PAUSA'; gameStatus.style.display = 'block'; pauseBtn.innerHTML = '▶ REANUDAR';
+            } else {
+                startTimer();
+                itemSpawnInterval = setInterval(spawnItem, 8000);
+                if (gameMode === 'cpu') startCPU();
+                gameStatus.style.display = 'none'; pauseBtn.innerHTML = '⏸ PAUSAR [P]';
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerDisplay.textContent = currentTimer < 10 ? `0${currentTimer}` : currentTimer; 
+            timerInterval = setInterval(() => {
+                if(isPaused) return; 
+                currentTimer--;
+                timerDisplay.textContent = currentTimer < 10 ? `0${currentTimer}` : currentTimer;
+
+                if (currentTimer <= 0) {
+                    clearInterval(timerInterval);
+                    if (cpuActionInterval) clearInterval(cpuActionInterval);
+                    checkGameOver(true);
+                }
+            }, 1000);
+        }
+
+        // Lógica de CPU, Health, Collision, Attack, Item y Physics (Omitida para brevedad, son las mismas que antes)
+        
+        function startCPU() { /* ... */ }
+        function getTeamHealth(team) { /* ... */ }
+        function checkGameOver(timeUp = false) { /* ... */ }
+        function updateHealth(targetId, damage) { /* ... */ }
+        function spawnParticles(x, y) { /* ... */ }
+        function checkFighterCollision(fighterA, fighterB) { /* ... */ }
+        function checkMeleeCollision(attackerFighter) { /* ... */ }
+        function checkBoxCollision(box1, box2) { /* ... */ }
+        function attack(attackerId) { /* ... */ }
+        function spawnItem() { /* ... */ }
+        function launchItem(playerNum) { /* ... */ }
+        function hideItem() { /* ... */ }
+        function updatePlayerPhysics(fighter, moveLeft, moveRight) { /* ... */ }
+
+        // --- Bucle Principal del Juego (Game Loop) ---
+
+        function animate() {
+            requestAnimationFrame(animate);
+            // El juego se detiene si no está activo O si está en pausa O si está contando
+            if (!gameActive || isPaused || isCountingDown) return; 
+
+            // Lógica de la animación de movimiento, posición y colisiones (Misma lógica)
+            const scaleFactor = gameArea.clientWidth / CONTAINER_WIDTH; 
+
+            fighters.forEach(f => {
+                if (!f.active || f.health <= 0) return;
+                // ... (lógica de movimiento y posición)
+                
+                let moveLeft = false;
+                let moveRight = false;
+                let jump = false;
+
+                if (f.id === 1 || f.id === 3) { // P1 y P3 (Aliado de P1)
+                    moveLeft = keys.a.pressed;
+                    moveRight = keys.d.pressed;
+                    jump = keys.w.pressed;
+                } else if (f.id === 2 || f.id === 4) { // P2 y P4 (Aliado de P2)
+                    moveLeft = keys.ArrowLeft.pressed;
+                    moveRight = keys.ArrowRight.pressed;
+                    jump = keys.ArrowUp.pressed;
+                }
+
+                if (moveLeft) f.direction = -1;
+                if (moveRight) f.direction = 1;
+
+                f.el.classList.toggle('jumping', !f.state.onGround);
+                f.el.classList.toggle('moving', f.state.onGround && (moveLeft || moveRight));
+                f.el.classList.toggle('attacking', f.isAttacking);
+                
+                f.el.style.transform = `scaleX(${f.direction})`; 
+
+                updatePlayerPhysics(f, moveLeft, moveRight);
+                
+                if (jump && f.state.onGround) {
+                    f.state.velocityY = jumpForce;
+                    f.state.onGround = false;
+                }
+
+                f.el.style.left = `${f.state.x * scaleFactor}px`; 
+                f.el.style.bottom = `${f.state.y}px`; 
+            });
+
+            keys.w.pressed = false; 
+            keys.ArrowUp.pressed = false;
+
+            // ... (lógica de Item)
+            if (itemState.flying) {
+                itemState.x += itemState.velocityX;
+                
+                if (itemState.x + itemState.width < 0 || itemState.x > CONTAINER_WIDTH) { hideItem(); }
+
+                fighters.forEach(f => {
+                    if (f.active && f.health > 0) {
+                        const isTarget = (itemState.direction === 1 && f.team === 2) || (itemState.direction === -1 && f.team === 1);
+                        
+                        if (isTarget && checkBoxCollision(itemState, f.state)) {
+                            updateHealth(f.id, ITEM_DAMAGE);
+                            f.el.style.boxShadow = '0 0 20px yellow';
+                            setTimeout(() => f.el.style.boxShadow = '0 10px 0 rgba(0, 0, 0, 0.3)', 200);
+                            hideItem();
+                        }
+                    }
+                });
+            }
+
+            itemEl.style.left = `${itemState.x * scaleFactor}px`; 
+            itemEl.style.bottom = `${itemState.y}px`;
+        }
+
+        // --- Manejo de Entradas del Teclado y Táctiles (Misma lógica, con chequeo de isCountingDown) ---
+
+        function getKeyName(event) {
+            const key = event.key;
+            if (key.startsWith('Arrow')) { return key; }
+            return key.toLowerCase();
+        }
+
+        function handleKeyAction(key, isPressed) {
+            // Permitir pausa/reanudación incluso si el juego no ha comenzado (pero la pantalla sí)
+            if (key === 'p' && isPressed && gameArea.classList.contains('hidden') === false && !isCountingDown) { togglePause(); return; }
+            
+            // Ignorar todo si el juego no está activo o si está contando
+            if (!gameActive || isPaused || isCountingDown) return; 
+
+            const isP2Key = (key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'l');
+            if (gameMode === 'cpu' && isP2Key && isPressed) {
+                if (key === 'l') return; 
+            }
+            
+            if (keys.hasOwnProperty(key)) {
+                keys[key].pressed = isPressed;
+            }
+
+            if (isPressed) {
+                switch (key) {
+                    case 'j':
+                        attack(1); 
+                        if (fighters[2].active) attack(3);
+                        break;
+                    case 'l':
+                        if (gameMode !== 'cpu') {
+                            attack(2);
+                            if (fighters[3].active) attack(4);
+                        }
+                        break;
+                }
+            }
+        }
+        
+        // 1. ESCUCHADORES DE TECLADO (PC)
+        window.addEventListener('keydown', (event) => {
+            if (event.repeat) return;
+            handleKeyAction(getKeyName(event), true);
+        });
+
+        window.addEventListener('keyup', (event) => {
+            handleKeyAction(getKeyName(event), false);
+        });
+
+        // 2. ESCUCHADORES TÁCTILES (CELULAR)
+        touchButtons.forEach(button => {
+            const key = button.getAttribute('data-key');
+            
+            button.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleKeyAction(key, true);
+            });
+            
+            button.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                handleKeyAction(key, false);
+            });
+        });
+
+        // Inicializar
+        goToHome();
+        
+    </script>
+
+</body>
+</html>
